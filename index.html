@@ -1,0 +1,277 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Waffensachkunde Profi</title>
+
+<style>
+body{
+background:#0f1115;
+color:white;
+font-family:-apple-system,Arial;
+margin:0;
+padding:20px;
+}
+.container{
+max-width:850px;
+margin:auto;
+}
+h1{
+font-size:34px;
+}
+.card{
+background:#1c1f26;
+padding:22px;
+border-radius:18px;
+margin-top:20px;
+}
+button{
+padding:14px 18px;
+border:none;
+border-radius:14px;
+margin:6px;
+font-size:17px;
+cursor:pointer;
+}
+.primary{
+background:#2ecc71;
+color:white;
+}
+.secondary{
+background:#3a3f48;
+color:white;
+}
+.option{
+background:#2b3039;
+padding:14px;
+margin:10px 0;
+border-radius:12px;
+}
+.correct{
+background:#1f6f43 !important;
+}
+.wrong{
+background:#7a2f2f !important;
+}
+.result{
+margin-top:20px;
+font-size:18px;
+line-height:1.5;
+}
+.stats{
+margin-top:10px;
+opacity:0.85;
+}
+textarea{
+width:100%;
+padding:14px;
+border-radius:12px;
+background:#2b3039;
+color:white;
+border:none;
+font-size:16px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Waffensachkunde Trainer</h1>
+
+<button class="primary" onclick="setMode('learn')">Lernmodus</button>
+<button class="primary" onclick="setMode('exam')">Prüfungsmodus</button>
+<button class="secondary" onclick="shuffleQuestions()">Zufallsfragen</button>
+
+<div class="stats" id="stats"></div>
+
+<div class="card" id="app"></div>
+
+</div>
+
+<script>
+
+let questions=[];
+let current=0;
+let score=0;
+let mode='learn';
+
+async function init(){
+
+const res = await fetch('questions.json');
+questions = await res.json();
+
+render();
+
+}
+
+function setMode(m){
+
+mode=m;
+
+alert(
+m==='learn'
+? 'Lernmodus aktiviert'
+: 'Prüfungsmodus aktiviert'
+);
+
+render();
+
+}
+
+function shuffleQuestions(){
+
+questions.sort(()=>Math.random()-0.5);
+current=0;
+score=0;
+
+render();
+
+}
+
+function render(){
+
+const q = questions[current];
+
+document.getElementById('stats').innerHTML =
+`Frage ${current+1} von ${questions.length} | Punkte: ${score} | Modus: ${mode}`;
+
+let html = `
+<h2>${q.id}</h2>
+<p>${q.question}</p>
+`;
+
+if(q.type==='multiple'){
+
+q.options.forEach((o,i)=>{
+
+html += `
+<div class="option" id="option-${i}">
+<label>
+<input type="checkbox" value="${i}">
+${o}
+</label>
+</div>
+`;
+
+});
+
+}else{
+
+html += `
+<textarea id="textAnswer" rows="6"></textarea>
+`;
+
+}
+
+html += `
+<br><br>
+
+<button class="primary" onclick="checkAnswer()">Antwort abschicken</button>
+
+<button class="secondary" onclick="nextQuestion()">Nächste Frage</button>
+
+<div class="result" id="result"></div>
+`;
+
+document.getElementById('app').innerHTML = html;
+
+}
+
+function arraysEqual(a,b){
+
+return JSON.stringify(a.sort())===JSON.stringify(b.sort());
+
+}
+
+function checkAnswer(){
+
+const q = questions[current];
+
+const result = document.getElementById('result');
+
+if(q.type==='multiple'){
+
+const checked = [...document.querySelectorAll('input[type=checkbox]:checked')]
+.map(e=>parseInt(e.value));
+
+const correct = arraysEqual(checked,q.correct);
+
+q.options.forEach((o,i)=>{
+
+const el = document.getElementById(`option-${i}`);
+
+if(q.correct.includes(i)){
+el.classList.add('correct');
+}else if(checked.includes(i)){
+el.classList.add('wrong');
+}
+
+});
+
+if(correct){
+
+score++;
+
+result.innerHTML = "✅ Richtig beantwortet";
+
+}else{
+
+result.innerHTML = "❌ Falsch beantwortet";
+
+}
+
+if(mode==='learn'){
+
+result.innerHTML += "<br><br><b>Richtige Antwort:</b><br>" +
+q.correct.map(i=>q.options[i]).join("<br>");
+
+}
+
+}else{
+
+result.innerHTML =
+"<b>Musterlösung:</b><br>" + q.answer;
+
+}
+
+}
+
+function nextQuestion(){
+
+current++;
+
+if(current >= questions.length){
+
+document.getElementById('app').innerHTML = `
+<h2>Prüfung beendet</h2>
+<p>Punkte: ${score}</p>
+<button class="primary" onclick="restart()">Neu starten</button>
+`;
+
+return;
+
+}
+
+render();
+
+}
+
+function restart(){
+
+current=0;
+score=0;
+
+shuffleQuestions();
+
+}
+
+init();
+
+</script>
+
+</body>
+</html>

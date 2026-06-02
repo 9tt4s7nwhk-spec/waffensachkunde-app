@@ -1,0 +1,65 @@
+[
+  {
+    "id": "1.01",
+    "question": "Was regelt das Waffengesetz?",
+    "type": "text",
+    "answer": "Das Waffengesetz regelt den Umgang mit Waffen oder Munition unter Berücksichtigung der öffentlichen Sicherheit und Ordnung."
+  },
+  {
+    "id": "1.02",
+    "question": "Umgang mit einer Schusswaffe hat…",
+    "type": "multiple",
+    "options": [
+      "wer damit schießt",
+      "wer die Waffe verbringt oder mitnimmt",
+      "wer die Waffe unbrauchbar macht"
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ]
+  },
+  {
+    "id": "1.04",
+    "question": "Welche Gegenstände sind Schusswaffen im Sinne des Waffengesetzes?",
+    "type": "multiple",
+    "options": [
+      "Armbrust",
+      "Druckluftgewehr mit F im Fünfeck",
+      "Doppelflinte"
+    ],
+    "correct": [
+      1,
+      2
+    ]
+  },
+  {
+    "id": "1.06",
+    "question": "Welche der aufgeführten Waffen ist eine halbautomatische Schusswaffe?",
+    "type": "multiple",
+    "options": [
+      "Single-Action-Revolver",
+      "Selbstladepistole",
+      "Doppelflinte",
+      "Double-Action-Revolver"
+    ],
+    "correct": [
+      1
+    ]
+  },
+  {
+    "id": "1.12",
+    "question": "Wie unterscheidet das Waffengesetz Langwaffen und Kurzwaffen?",
+    "type": "multiple",
+    "options": [
+      "Langwaffen sind länger als 60 cm",
+      "Kurzwaffen unterschreiten 60 cm oder haben unter 30 cm Lauflänge",
+      "Kurzwaffen haben maximal 20 cm Länge"
+    ],
+    "correct": [
+      0,
+      1
+    ]
+  }
+]
