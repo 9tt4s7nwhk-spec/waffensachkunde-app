@@ -1,0 +1,225 @@
+SUPER EINFACHE IPHONE METHODE (OHNE ZIP)
+
+1. Safari öffnen
+
+Gehe auf:
+
+https://github.com
+
+⸻
+
+2. Repository öffnen
+
+Öffne dein Repository:
+waffensachkunde-app
+
+⸻
+
+3. Neue Datei erstellen
+
+Oben rechts:
+
+Add file
+→ Create new file
+
+⸻
+
+4. Dateiname eingeben
+
+Ganz oben:
+
+index.html
+
+⸻
+
+5. Diesen kompletten Code kopieren
+
+Kopiere ALLES hier hinein:
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Waffensachkunde Trainer</title>
+<style>
+body{
+font-family:Arial,sans-serif;
+background:#111;
+color:white;
+padding:20px;
+margin:0;
+}
+.container{
+max-width:700px;
+margin:auto;
+}
+button{
+padding:14px;
+border:none;
+border-radius:10px;
+margin:5px;
+font-size:16px;
+background:#2ecc71;
+color:white;
+}
+.question{
+background:#222;
+padding:20px;
+border-radius:12px;
+margin-top:20px;
+}
+.option{
+padding:10px;
+margin:10px 0;
+background:#333;
+border-radius:8px;
+}
+textarea{
+width:100%;
+padding:10px;
+border-radius:8px;
+}
+.result{
+margin-top:20px;
+font-weight:bold;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Waffensachkunde Trainer</h1>
+<button onclick="mode='learn'">Lernmodus</button>
+<button onclick="mode='exam'">Prüfungsmodus</button>
+<div id="app"></div>
+</div>
+<script>
+let mode = "learn";
+const questions = [
+{
+question:"Was regelt das Waffengesetz?",
+type:"text",
+answer:"Das Waffengesetz regelt den Umgang mit Waffen oder Munition."
+},
+{
+question:"Welche Gegenstände sind Schusswaffen?",
+type:"multiple",
+options:[
+"Armbrust",
+"Druckluftgewehr mit F im Fünfeck",
+"Doppelflinte"
+],
+correct:[1,2]
+}
+];
+let current = 0;
+function render(){
+const q = questions[current];
+let html = `
+<div class="question">
+<h2>Frage ${current+1}</h2>
+<p>${q.question}</p>
+`;
+if(q.type==="multiple"){
+q.options.forEach((o,i)=>{
+html += `
+<div class="option">
+<label>
+<input type="checkbox" value="${i}">
+${o}
+</label>
+</div>
+`;
+});
+}else{
+html += `
+<textarea id="textAnswer" rows="6"></textarea>
+`;
+}
+html += `
+<button onclick="checkAnswer()">Antwort abschicken</button>
+<button onclick="nextQuestion()">Nächste Frage</button>
+<div class="result" id="result"></div>
+</div>
+`;
+document.getElementById("app").innerHTML = html;
+}
+function checkAnswer(){
+const q = questions[current];
+const result = document.getElementById("result");
+if(q.type==="multiple"){
+const checked = [...document.querySelectorAll("input:checked")]
+.map(e=>parseInt(e.value));
+const correct =
+JSON.stringify(checked.sort()) ===
+JSON.stringify(q.correct.sort());
+if(correct){
+result.innerHTML = "✅ Richtig";
+}else{
+result.innerHTML = "❌ Falsch";
+}
+if(mode==="learn"){
+result.innerHTML += "<br>Richtige Antwort: " +
+q.correct.map(i=>q.options[i]).join(", ");
+}
+}else{
+result.innerHTML =
+"Musterantwort:<br>" + q.answer;
+}
+}
+function nextQuestion(){
+current++;
+if(current >= questions.length){
+current = 0;
+}
+render();
+}
+render();
+</script>
+</body>
+</html>
+
+⸻
+
+6. Datei speichern
+
+Ganz unten:
+
+Commit new file
+
+⸻
+
+7. GitHub Pages aktivieren
+
+Repository → Settings → Pages
+
+Dann:
+
+Source:
+Deploy from branch
+
+Branch:
+main
+
+Folder:
+/(root)
+
+Save
+
+⸻
+
+8. Fertig
+
+Deine App erscheint dann unter:
+
+https://DEINNAME.github.io/waffensachkunde-app
+
+⸻
+
+9. Auf iPhone installieren
+
+Safari öffnen
+→ Teilen
+→ Zum Home-Bildschirm
+
+Jetzt läuft die App wie eine echte iPhone-App 🚀
