@@ -2,56 +2,50 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Waffensachkunde Trainer</title>
 
 <style>
 body{
-font-family:Arial,sans-serif;
 background:#111;
 color:white;
-padding:20px;
+font-family:-apple-system,Arial;
 margin:0;
+padding:20px;
 }
-
 .container{
-max-width:700px;
+max-width:800px;
 margin:auto;
 }
-
+.card{
+background:#1f1f1f;
+padding:20px;
+border-radius:16px;
+margin-top:20px;
+}
 button{
-padding:14px;
+padding:14px 18px;
 border:none;
-border-radius:10px;
+border-radius:12px;
 margin:5px;
 font-size:16px;
-background:#2ecc71;
+background:#28c76f;
 color:white;
 }
-
-.question{
-background:#222;
-padding:20px;
-border-radius:12px;
-margin-top:20px;
+.secondary{
+background:#444;
 }
-
-.option{
-padding:10px;
-margin:10px 0;
-background:#333;
-border-radius:8px;
-}
-
 textarea{
 width:100%;
-padding:10px;
-border-radius:8px;
+padding:12px;
+border-radius:12px;
+background:#333;
+color:white;
+border:none;
 }
-
 .result{
 margin-top:20px;
-font-weight:bold;
+font-size:18px;
 }
 </style>
 </head>
@@ -62,108 +56,98 @@ font-weight:bold;
 
 <h1>Waffensachkunde Trainer</h1>
 
-<button onclick="mode='learn'">Lernmodus</button>
-<button onclick="mode='exam'">Prüfungsmodus</button>
+<button onclick="setMode('learn')">Lernmodus</button>
+<button onclick="setMode('exam')">Prüfungsmodus</button>
+<button class="secondary" onclick="shuffleQuestions()">Zufallsfragen</button>
 
-<div id="app"></div>
+<div id="stats"></div>
+
+<div class="card" id="app"></div>
 
 </div>
 
 <script>
 
-let mode = "learn";
+let questions=[];
+let current=0;
+let mode='learn';
+let score=0;
 
-const questions = [
-{
-question:"Was regelt das Waffengesetz?",
-type:"text",
-answer:"Das Waffengesetz regelt den Umgang mit Waffen oder Munition."
-},
-{
-question:"Welche Gegenstände sind Schusswaffen?",
-type:"multiple",
-options:[
-"Armbrust",
-"Druckluftgewehr mit F im Fünfeck",
-"Doppelflinte"
-],
-correct:[1,2]
+async function init(){
+
+const res = await fetch('questions.json');
+questions = await res.json();
+
+render();
+
 }
-];
 
-let current = 0;
+function setMode(m){
+
+mode = m;
+
+alert(
+m==='learn'
+? 'Lernmodus aktiviert'
+: 'Prüfungsmodus aktiviert'
+);
+
+}
+
+function shuffleQuestions(){
+
+questions.sort(()=>Math.random()-0.5);
+current=0;
+score=0;
+
+render();
+
+}
 
 function render(){
 
 const q = questions[current];
 
-let html = `
-<div class="question">
-<h2>Frage ${current+1}</h2>
+document.getElementById('stats').innerHTML =
+`Frage ${current+1} von ${questions.length} | Punkte: ${score} | Modus: ${mode}`;
+
+document.getElementById('app').innerHTML = `
+
+<h2>${q.id}</h2>
+
 <p>${q.question}</p>
-`;
 
-if(q.type==="multiple"){
+<textarea id="answer" rows="6" placeholder="Antwort eingeben..."></textarea>
 
-q.options.forEach((o,i)=>{
-html += `
-<div class="option">
-<label>
-<input type="checkbox" value="${i}">
-${o}
-</label>
-</div>
-`;
-});
+<br><br>
 
-}else{
+<button onclick="submitAnswer()">Antwort abschicken</button>
 
-html += `
-<textarea id="textAnswer" rows="6"></textarea>
-`;
+<button class="secondary" onclick="nextQuestion()">Nächste Frage</button>
 
-}
-
-html += `
-<button onclick="checkAnswer()">Antwort abschicken</button>
-<button onclick="nextQuestion()">Nächste Frage</button>
 <div class="result" id="result"></div>
-</div>
+
 `;
 
-document.getElementById("app").innerHTML = html;
-
 }
 
-function checkAnswer(){
+function submitAnswer(){
 
-const q = questions[current];
-const result = document.getElementById("result");
+const result = document.getElementById('result');
 
-if(q.type==="multiple"){
+if(mode==='learn'){
 
-const checked = [...document.querySelectorAll("input:checked")]
-.map(e=>parseInt(e.value));
-
-const correct =
-JSON.stringify(checked.sort()) ===
-JSON.stringify(q.correct.sort());
-
-if(correct){
-result.innerHTML = "✅ Richtig";
-}else{
-result.innerHTML = "❌ Falsch";
-}
-
-if(mode==="learn"){
-result.innerHTML += "<br>Richtige Antwort: " +
-q.correct.map(i=>q.options[i]).join(", ");
-}
+result.innerHTML = `
+✅ Antwort gespeichert<br><br>
+Musterlösung:<br>
+Antwort siehe offizieller Fragenkatalog.
+`;
 
 }else{
 
-result.innerHTML =
-"Musterantwort:<br>" + q.answer;
+score++;
+
+result.innerHTML = 'Antwort gespeichert';
 
 }
 
@@ -174,14 +158,31 @@ function nextQuestion(){
 current++;
 
 if(current >= questions.length){
-current = 0;
+
+document.getElementById('app').innerHTML = `
+<h2>Prüfung beendet</h2>
+<p>Erreichte Punkte: ${score}</p>
+<button onclick="restart()">Neu starten</button>
+`;
+
+return;
+
 }
 
 render();
 
 }
 
-render();
+function restart(){
+
+current=0;
+score=0;
+
+shuffleQuestions();
+
+}
+
+init();
 
 </script>
 
